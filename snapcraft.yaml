@@ -1,0 +1,66 @@
+name: tuba
+base: core22
+adopt-info: tuba
+version: 0.5.0
+
+grade: stable
+confinement: strict
+license: GPL-3.0-only
+compression: lzo
+
+slots:
+  tuba:
+    interface: dbus
+    bus: session
+    name: dev.geopjr.Tuba
+
+apps:
+  tuba:
+    command: usr/bin/dev.geopjr.Tuba
+    desktop: usr/share/applications/dev.geopjr.Tuba.desktop
+    common-id: dev.geopjr.Tuba.desktop
+    extensions: [gnome]
+    plugs:
+      - network-status
+      - network
+
+parts:
+  libspelling:
+    plugin: meson
+    source: https://gitlab.gnome.org/chergert/libspelling
+    source-type: git
+    source-tag: 0.2.0
+    meson-parameters:
+      - -Ddocs=false
+      - --prefix=/usr
+    override-pull: |
+      craftctl default
+      # Remove the meson.build line for erroring on redundant-declarations
+      sed -i.bak -e '/.*-Werror=redundant-decls.*$/d' meson.build
+  tuba:
+    after:
+      - libspelling
+    source: https://github.com/GeopJr/Tuba
+    source-type: git
+    source-tag: 'v${SNAPCRAFT_PROJECT_VERSION}'
+    plugin: meson
+    meson-parameters:
+      - --prefix=/usr
+      - -Ddevel=false
+    parse-info: [usr/share/metainfo/dev.geopjr.Tuba.metainfo.xml]
+    build-packages:
+      - libjson-glib-dev
+      - libsecret-1-dev
+  cleanup:
+    after:  # Make this part run last; list all your other parts here
+      - tuba
+    plugin: nil
+    build-snaps:  # List all content-snaps and base snaps you're using here
+      - core22
+      - gnome-42-2204
+      - gnome-42-2204-sdk
+    override-prime: |
+      set -eux
+      for snap in "core22" "gnome-42-2204" "gnome-42-2204-sdk"; do  # List all content-snaps and base snaps you're using here
+          cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
+      done
