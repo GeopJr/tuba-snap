@@ -1,7 +1,7 @@
 name: tuba
 base: core22
 adopt-info: tuba
-version: 0.6.1
+version: 0.6.3
 
 grade: stable
 confinement: strict
