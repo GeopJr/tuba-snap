@@ -1,7 +1,7 @@
 name: tuba
-base: core22
+base: core24
 adopt-info: tuba
-version: 0.6.3
+version: 0.8.4
 
 grade: stable
 confinement: strict
@@ -27,16 +27,14 @@ apps:
 parts:
   libspelling:
     plugin: meson
-    source: https://gitlab.gnome.org/chergert/libspelling
+    source: https://gitlab.gnome.org/GNOME/libspelling
     source-type: git
-    source-tag: 0.2.0
+    source-tag: 0.2.1
     meson-parameters:
       - -Ddocs=false
       - --prefix=/usr
-    override-pull: |
-      craftctl default
-      # Remove the meson.build line for erroring on redundant-declarations
-      sed -i.bak -e '/.*-Werror=redundant-decls.*$/d' meson.build
+    build-environment:
+      - CFLAGS: -Wno-error=redundant-decls
   tuba:
     after:
       - libspelling
@@ -51,16 +49,3 @@ parts:
     build-packages:
       - libjson-glib-dev
       - libsecret-1-dev
-  cleanup:
-    after:  # Make this part run last; list all your other parts here
-      - tuba
-    plugin: nil
-    build-snaps:  # List all content-snaps and base snaps you're using here
-      - core22
-      - gnome-42-2204
-      - gnome-42-2204-sdk
-    override-prime: |
-      set -eux
-      for snap in "core22" "gnome-42-2204" "gnome-42-2204-sdk"; do  # List all content-snaps and base snaps you're using here
-          cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
-      done
