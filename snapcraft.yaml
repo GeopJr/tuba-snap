@@ -28,9 +28,9 @@ apps:
 parts:
   libspelling:
     plugin: meson
-    source: https://gitlab.gnome.org/GNOME/libspelling
+    source: https://gitlab.gnome.org/GNOME/libspelling.git
     source-type: git
-    source-tag: 0.4.7
+    source-tag: 0.4.8
     meson-parameters:
       - -Ddocs=false
       - --prefix=/usr
