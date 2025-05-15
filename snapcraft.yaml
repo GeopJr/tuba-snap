@@ -23,6 +23,7 @@ apps:
     plugs:
       - network-status
       - network
+      - password-manager-service
 
 parts:
   libspelling:
