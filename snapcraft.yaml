@@ -1,12 +1,16 @@
 name: tuba
 base: core24
 adopt-info: tuba
-version: 0.9.2
+version: 0.10.0
 
 grade: stable
 confinement: strict
 license: GPL-3.0-only
 compression: lzo
+
+layout:
+  /usr/lib/x86_64-linux-gnu/webkitgtk-6.0:
+    bind: $SNAP/webkitgtk-platform/usr/lib/x86_64-linux-gnu/webkitgtk-6.0
 
 slots:
   tuba:
@@ -20,12 +24,45 @@ apps:
     desktop: usr/share/applications/dev.geopjr.Tuba.desktop
     common-id: dev.geopjr.Tuba.desktop
     extensions: [gnome]
+    environment:
+      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/webkitgtk-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/webkitgtk-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/webkitgtk-6.0:$LD_LIBRARY_PATH
     plugs:
       - network-status
       - network
       - password-manager-service
 
 parts:
+  clapper:
+    plugin: meson
+    source: https://github.com/Rafostar/clapper.git
+    source-tag: '0.8.0'
+    source-depth: 1
+    build-snaps:
+      - ffmpeg-2404-sdk
+      - blueprint-compiler
+    build-environment:
+      - PKG_CONFIG_PATH: /snap/ffmpeg-2404-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig:$PKG_CONFIG_PATH
+      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
+    meson-parameters:
+      - --prefix=/usr
+      - -Dclapper=enabled
+      - -Dclapper-gtk=enabled
+      - -Dclapper-app=disabled
+      - -Dintrospection=enabled
+      - -Dvapi=enabled
+    build-packages:
+      - libgstreamer-plugins-base1.0-dev
+      - libgudev-1.0-dev
+      - libsass-dev
+      - sassc
+      - libdv4-dev
+      - libdvdread-dev
+      - libdvdnav-dev
+      - libass-dev
+      - libuchardet-dev
+    prime:
+      - -usr/include
+      - -usr/lib/*/pkgconfig
   libspelling:
     plugin: meson
     source: https://gitlab.gnome.org/GNOME/libspelling.git
@@ -41,15 +78,33 @@ parts:
       - libspelling
     source: https://github.com/GeopJr/Tuba
     source-type: git
-    source-tag: 'v0.9.2'
+    source-tag: 'v0.10.0'
     plugin: meson
     meson-parameters:
       - --prefix=/usr
       - -Ddevel=false
     parse-info: [usr/share/metainfo/dev.geopjr.Tuba.metainfo.xml]
+    build-snaps:
+      - webkitgtk-6-gnome-2404-sdk
+    build-environment:
+      - PKG_CONFIG_PATH: /snap/webkitgtk-6-gnome-2404-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig:/snap/ffmpeg-2404-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig:${PKG_CONFIG_PATH}
+      - GI_TYPELIB_PATH: ${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/girepository-1.0:${GI_TYPELIB_PATH}
+      - LD_LIBRARY_PATH: /snap/webkitgtk-6-gnome-2404-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/ffmpeg-2404-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:${LD_LIBRARY_PATH}
     build-packages:
       - libjson-glib-dev
+      - libgexiv2-dev
       - libsecret-1-dev
       - libgstreamer1.0-dev
       - libgstreamer-plugins-base1.0-dev
       - libgstreamer-plugins-good1.0-dev
+
+plugs:
+  webkitgtk-6-gnome-2404:
+    interface: content
+    target: $SNAP/webkitgtk-platform
+    default-provider: webkitgtk-6-gnome-2404
+
+  ffmpeg-2404:
+    interface: content
+    target: ffmpeg-platform
+    default-provider: ffmpeg-2404
