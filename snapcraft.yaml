@@ -98,6 +98,8 @@ parts:
       - libgstreamer1.0-dev
       - libgstreamer-plugins-base1.0-dev
       - libgstreamer-plugins-good1.0-dev
+    stage-packages:
+      - libgexiv2-2
 
 plugs:
   webkitgtk-6-gnome-2404:
