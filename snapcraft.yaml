@@ -50,6 +50,7 @@ parts:
       - -Dclapper-app=disabled
       - -Dintrospection=enabled
       - -Dvapi=enabled
+      - -Denhancers-loader=disabled
     build-packages:
       - libgstreamer-plugins-base1.0-dev
       - libgudev-1.0-dev
