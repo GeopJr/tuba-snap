@@ -1,7 +1,7 @@
 name: tuba
 base: core24
 adopt-info: tuba
-version: 0.10.2
+version: 0.10.3
 
 grade: stable
 confinement: strict
@@ -68,7 +68,7 @@ parts:
     plugin: meson
     source: https://gitlab.gnome.org/GNOME/libspelling.git
     source-type: git
-    source-tag: 0.4.8
+    source-tag: 0.4.9
     meson-parameters:
       - -Ddocs=false
       - --prefix=/usr
@@ -79,7 +79,7 @@ parts:
       - libspelling
     source: https://github.com/GeopJr/Tuba
     source-type: git
-    source-tag: 'v0.10.2'
+    source-tag: 'v0.10.3'
     plugin: meson
     meson-parameters:
       - --prefix=/usr
